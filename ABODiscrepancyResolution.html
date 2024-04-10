@@ -98,9 +98,6 @@
     width: 15%;
 }
 
-#separateTable th {
-    background-color: #f2f2f2;
-}
       
     </style>
 </head>
@@ -340,6 +337,8 @@ function displayRepeatfronttype(currentBloodType) {
     titleCell.textContent = 'RBCs Washed with Warm Saline';
     titleCell.colSpan = 2;
     titleCell.style.fontWeight = 'bold';
+    titleCell.style.backgroundColor = '#dd3636'; 
+    titleCell.style.color = 'white';
     titleRow.appendChild(titleCell);
     tableBody.appendChild(titleRow);
 
@@ -383,6 +382,8 @@ function displayRTincubfront(currentBloodType) {
     titleCell.textContent = 'Incubated at RT for 15 Minutes';
     titleCell.colSpan = 2;
     titleCell.style.fontWeight = 'bold';
+    titleCell.style.backgroundColor = '#dd3636'; 
+    titleCell.style.color = 'white';
     titleRow.appendChild(titleCell);
     tableBody.appendChild(titleRow);
 
@@ -436,6 +437,8 @@ function displayAntibodyScreenResult(currentBloodType) {
     titleCell.textContent = 'Antibody Screen at IS';
     titleCell.colSpan = 2; 
     titleCell.style.fontWeight = 'bold';
+    titleCell.style.backgroundColor = '#dd3636';
+    titleCell.style.color = 'white';
     titleRow.appendChild(titleCell);
     tableBody.appendChild(titleRow);
 
@@ -482,6 +485,8 @@ function displayRTincubation(currentBloodType) {
     titleCell.textContent = 'Incubated at RT for 15 Minutes';
     titleCell.colSpan = 2; 
     titleCell.style.fontWeight = 'bold';
+    titleCell.style.backgroundColor = '#dd3636'; 
+    titleCell.style.color = 'white';
     titleRow.appendChild(titleCell);
     tableBody.appendChild(titleRow);
 
