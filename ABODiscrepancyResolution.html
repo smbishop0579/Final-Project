@@ -15,7 +15,6 @@
             border-collapse: collapse;
             width: 100%;
         }
-
         th, td {
             border: 1px solid #080808;
             padding: 8px;
@@ -64,14 +63,16 @@
         }
 
         #firstResolutionStepInput, #interpretationInput {
-            background-color: rgb(235, 20, 56);
+            background-color: #dd3636;
             color: white;
             border-radius: 10px;
             font-size: 20px;
         }
+      
+
 
         #discrepancyTypeInput {
-            background-color: #533d87;
+            background-color: #dd3636;
         }
 
         #userFeedback {
@@ -85,7 +86,22 @@
       
     #firstResolutionStepInstructions {
     display: none; 
+    font-weight: bold;
 }
+
+#separateTable th, #separateTable td {
+    font-family: 'Calibri';
+    border: 1px solid #080808;
+    padding: 2px;
+    text-align: center;
+    font-size: 25px;
+    width: 15%;
+}
+
+#separateTable th {
+    background-color: #f2f2f2;
+}
+      
     </style>
 </head>
 <body>
@@ -121,7 +137,7 @@
 <button id="checkAnswerBtn">Check Answer</button>
 
   <br>
-  <p id="firstResolutionStepInstructions">Based on the ABO results present, what would be the first method/test you would perform to try to resolve the discpreancy? Choose from the drop down menu below. Once you have selected what step you would like to perform next, click on the 'First Resolution Step' button to submit your response.</p>
+  <p id="firstResolutionStepInstructions"> Based on the ABO results present, what would be the first method/test you would perform to try to resolve the discpreancy? Choose from the drop down menu below. Once you have selected what step you would like to do next, click on the 'Check First Resolution Step' button to submit your response.</p>
   
 <select id="firstResolutionStepInput">
     <option value="Absorption/elutionstudies">Absorption/elution</option>
@@ -129,8 +145,10 @@
     <option value="Coldautoadsorption">Cold autoadsorption</option>
     <option value="Discrepancyresolved">Discpreancy resolved. No additional testing is needed.</option>
     <option value="Increaseserumcellratio">Increase plasma/serum to cell ratio</option>
-    <option value="Incubateroomtemp15-30mins">Incubate at RT for 15-30 mins</option>
-    <option value="Incubate4C15-30mins">Incubate at 4C for 15-30 mins</option>
+    <option value="Incubatefronttyperoomtemp15-30mins">Incubate front type at RT for 15-30 mins</option>
+    <option value="Incubatefronttype4C15-30mins">Incubate front type at 4C for 15-30 mins</option>
+    <option value="Incubatebacktyperoomtemp15-30mins">Incubate back type at RT for 15-30 mins</option>
+    <option value="Incubatebacktype4C15-30mins">Incubate back type at 4C for 15-30 mins</option>
     <option value="Performantibodyscreenandautocontrol">Perform antibody screen with auto control</option>
     <option value="Performantibodyid">Perform antibody identification via panel testing</option>
     <option value="Prewarm">Prewarm Technique</option>    
@@ -148,8 +166,11 @@
     <option value="Treatrbcsenzymes">Treat RBCs with enzymes</option>
     <option value="Washcellswithwarmsaline">Wash cells with warm saline and repeat testing</option>
 </select>
-<button id="firstResolutionStepBtn">First Resolution Step</button> 
+<button id="firstResolutionStepBtn">Check First Resolution Step</button> 
 <p id="firstResolutionFeedback"></p>
+  
+<p id="checkHistoryParagraph" style="display: none; font-weight: bold;"></p>
+
 
 <script>
 const reagents = ['Anti-A', 'Anti-B', 'A1 Cells', 'B Cells'];
@@ -172,13 +193,13 @@ const backTypedisc = {
     'Abpallo': ['4+', '0', '2+', '4+'],
     'Abpauto': ['4+', '0', '2+', '4+'],
     'AbpA1': ['4+', '0', '2+', '4+'],
-    'AbpRx': ['4+', '0', '2+', '4+'],
+    'AbpRx': ['4+', '0', '1+', '4+'],
     'Bbpallo': ['0', '4+', '4+', '2+'],
     'Bbpauto': ['0', '4+', '4+', '2+'],
-    'BbpRx': ['0', '4+', '4+', '2+'],
-    'ABbA1': ['4+', '4+', '2+', '0'],
+    'BbpRx': ['0', '4+', '4+', '1+'],
+    'ABbpA1': ['4+', '4+', '2+', '0'],
     'ABbpauto': ['4+', '4+', '2+', '2+'],
-    'ABbpRx': ['4+', '4+', '2+', '2+'],
+    'ABbpRx': ['4+', '4+', '1+', '1+'],
     'ABbpallo': ['4+', '4+', '2+', '2+'],
     'Abn': ['4+', '0', '0', '0'],
     'Bbn': ['0', '4+', '0', '0'],
@@ -224,28 +245,269 @@ function checkFirstResolutionStep() {
     const userResolutionStep = document.getElementById("firstResolutionStepInput").value;
     let correctStep;
 
-    if (useFrontType) {
-        if (['Afpaqb', 'AfpRx', 'BfpRx', 'Bfppoly', 'Ofsa'].includes(currentBloodType)) {
+if (useFrontType) {
+    switch (currentBloodType) {
+        case 'Afpaqb':
+        case 'AfpRx':
+        case 'BfpRx':
+        case 'Bfppoly':
+        case 'Ofsa':
             correctStep = 'Washcellswithwarmsaline';
-        } else if (['Afmf', 'Bfmf'].includes(currentBloodType)) {
+            break;
+        case 'Afmf':
+        case 'Bfmf':
             correctStep = 'Checkhistory';
-        } else if (['Afnsub', 'Bfnsub'].includes(currentBloodType)) {
-            correctStep = 'Incubateroomtemp15-30mins';
-        }
-    } else {
-        if (['Abpallo', 'Abpauto', 'AbpA1', 'AbpRx', 'Bbpallo', 'Bbpauto', 'BbpRx', 'ABbA1', 'ABbpauto', 'ABbpRx', 'ABbpallo'].includes(currentBloodType)) {
-            correctStep = 'Performantibodyscreenandautocontrol';
-        } else if (['Abn', 'Bbn', 'Obn'].includes(currentBloodType)) {
-            correctStep = 'Incubateroomtemp15-30mins';
+            break;
+        case 'Afnsub':
+        case 'Bfnsub':
+            correctStep = 'Incubatefronttyperoomtemp15-30mins';
+            break;
+        default:
+        break;
+    }
+   } else {
+        switch (currentBloodType) {
+          case 'Abpallo':
+          case 'Abpauto':
+          case 'AbpA1':
+          case 'AbpRx': 
+          case 'Bbpallo':
+          case 'Bbpauto': 
+          case 'BbpRx': 
+          case 'ABbpA1':
+          case 'ABbpauto':
+          case 'ABbpRx':
+          case 'ABbpallo': 
+              correctStep = 'Performantibodyscreenandautocontrol';
+              break;
+          case 'Abn':
+          case 'Bbn': 
+          case 'Obn':
+              correctStep = 'Incubatebacktyperoomtemp15-30mins';
+              break;
+          default:
         }
     }
-
-    if (userResolutionStep === correctStep) {
+ if (userResolutionStep === correctStep) {
         document.getElementById("feedback").textContent = "Correct! This is the appropriate first resolution step for this type of ABO discrepancy.";
+      
+        if (userResolutionStep === 'Checkhistory') {
+            displayCheckhx(currentBloodType);
+        }
+        if (userResolutionStep === 'Washcellswithwarmsaline') {
+            displayRepeatfronttype(currentBloodType);
+        }
+        if (userResolutionStep === 'Performantibodyscreenandautocontrol') {
+            displayAntibodyScreenResult(currentBloodType);
+        }
+        if (userResolutionStep === 'Incubatebacktyperoomtemp15-30mins') {
+            displayRTincubation(currentBloodType);
+        }
+           if (userResolutionStep === 'Incubatefronttyperoomtemp15-30mins') {
+            displayRTincubfront(currentBloodType);
+           }
+   
     } else {
         document.getElementById("feedback").textContent = "Incorrect. This is not the first procedure/test performed or is not used to resolve this type of ABO discrepancy. Please choose a different option.";
     }
 }
+
+function displayCheckhx(currentBloodType) {
+    const checkHistoryText = "Patient history check: The patient was transfused two group O red cells two weeks ago.";
+
+    document.getElementById("checkHistoryParagraph").textContent = checkHistoryText;
+  
+    document.getElementById("checkHistoryParagraph").style.display = "block";
+}
+
+
+function displayRepeatfronttype(currentBloodType) {
+    const  Repeatfronttype= {
+        'AfpRx': ['4+', '0'],
+        'BfpRx': ['0', '4+'],
+        'Ofsa': ['0', '0'],
+        'Bfppoly': ['3+', '4+'],
+        'Afpaqb': ['4+', '1+']
+    };
+
+ const table = document.createElement('table');
+    table.id = 'separateTable'; 
+
+    const tableBody = document.createElement('tbody');
+
+    const titleRow = document.createElement('tr');
+    const titleCell = document.createElement('td');
+    titleCell.textContent = 'RBCs Washed with Warm Saline';
+    titleCell.colSpan = 2;
+    titleCell.style.fontWeight = 'bold';
+    titleRow.appendChild(titleCell);
+    tableBody.appendChild(titleRow);
+
+    const labelRow = document.createElement('tr');
+    const AntiALabel = document.createElement('td');
+    const AntiBLabel = document.createElement('td');
+    AntiALabel.textContent = 'Anti-A';
+    AntiBLabel.textContent = 'Anti-B';
+    labelRow.appendChild(AntiALabel);
+    labelRow.appendChild(AntiBLabel);
+    tableBody.appendChild(labelRow);
+
+    const results = Repeatfronttype[currentBloodType];
+
+    const resultRow = document.createElement('tr');
+    for (let i = 0; i < results.length; i++) {
+        const valueCell = document.createElement('td');
+        valueCell.textContent = results[i];
+        resultRow.appendChild(valueCell);
+    }
+    tableBody.appendChild(resultRow);
+
+    table.appendChild(tableBody);
+    document.body.appendChild(table);
+}
+  
+function displayRTincubfront(currentBloodType) {
+    const  RTincubfront= {
+        'Afnsub': ['1+', '0'],
+        'Bfnsub': ['0', '1+']
+    };
+
+
+ const table = document.createElement('table');
+    table.id = 'separateTable'; 
+
+    const tableBody = document.createElement('tbody');
+
+    const titleRow = document.createElement('tr');
+    const titleCell = document.createElement('td');
+    titleCell.textContent = 'Incubated at RT for 15 Minutes';
+    titleCell.colSpan = 2;
+    titleCell.style.fontWeight = 'bold';
+    titleRow.appendChild(titleCell);
+    tableBody.appendChild(titleRow);
+
+    const labelRow = document.createElement('tr');
+    const AntiALabel = document.createElement('td');
+    const AntiBLabel = document.createElement('td');
+    AntiALabel.textContent = 'Anti-A';
+    AntiBLabel.textContent = 'Anti-B';
+    labelRow.appendChild(AntiALabel);
+    labelRow.appendChild(AntiBLabel);
+    tableBody.appendChild(labelRow);
+
+    const results = RTincubfront[currentBloodType];
+
+    const resultRow = document.createElement('tr');
+    for (let i = 0; i < results.length; i++) {
+        const valueCell = document.createElement('td');
+        valueCell.textContent = results[i];
+        resultRow.appendChild(valueCell);
+    }
+    tableBody.appendChild(resultRow);
+
+    table.appendChild(tableBody);
+    document.body.appendChild(table);
+}
+  
+function displayAntibodyScreenResult(currentBloodType) {
+    const ISantibodyscreenresults = {
+        'Abpallo': ['2+', '1+', '0', '0'], 
+        'Abpauto': ['2+', '2+', '2+', '2+'], 
+        'AbpA1': ['0', '0', '0', '0'], 
+        'AbpRx': ['1+', '1+', '1+', '1+'], 
+        'Bbpallo': ['0', '3+', '2+', '0'], 
+        'Bbpauto': ['2+', '2+', '2+', '2+'], 
+        'BbpRx': ['1+', '1+', '1+', '1+'], 
+        'ABbpA1': ['0', '0', '0', '0'], 
+        'ABbpauto': ['2+', '2+', '2+', '2+'], 
+        'ABbpRx': ['1+', '1+', '1+', '1+'], 
+        'ABbpallo': ['0', '0', '2+', '0']
+    };
+
+    const table = document.createElement('table');
+    table.id = 'separateTable'; 
+
+    const tableBody = document.createElement('tbody');
+
+    const labels = ['SCI', 'SCII', 'SCIII', 'AC'];
+
+    const titleRow = document.createElement('tr');
+    const titleCell = document.createElement('td');
+    titleCell.textContent = 'Antibody Screen at IS';
+    titleCell.colSpan = 2; 
+    titleCell.style.fontWeight = 'bold';
+    titleRow.appendChild(titleCell);
+    tableBody.appendChild(titleRow);
+
+    const labelRow = document.createElement('tr');
+    const emptyLabelCell = document.createElement('td');
+    const ISLabelCell = document.createElement('td');
+    emptyLabelCell.textContent = ''; // Empty cell for first column
+    ISLabelCell.textContent = 'IS'; // Cell for IS label
+    labelRow.appendChild(emptyLabelCell);
+    labelRow.appendChild(ISLabelCell);
+    tableBody.appendChild(labelRow);
+
+    const results = ISantibodyscreenresults[currentBloodType];
+
+    for (let i = 0; i < results.length; i++) {
+        const row = document.createElement('tr');
+        const labelCell = document.createElement('td');
+        const valueCell = document.createElement('td');
+        labelCell.textContent = `${labels[i]}:`;
+        valueCell.textContent = results[i];
+        row.appendChild(labelCell);
+        row.appendChild(valueCell);
+        tableBody.appendChild(row);
+    }
+
+    table.appendChild(tableBody);
+    document.body.appendChild(table);
+}
+
+function displayRTincubation(currentBloodType) {
+    const A1CBCRT15 = {
+        'Abn': ['0', '2+'], 
+        'Bbn': ['2+', '0'], 
+        'Obn': ['2+', '2+']
+    };
+
+    const table = document.createElement('table');
+    table.id = 'separateTable'; 
+
+    const tableBody = document.createElement('tbody');
+
+    const titleRow = document.createElement('tr');
+    const titleCell = document.createElement('td');
+    titleCell.textContent = 'Incubated at RT for 15 Minutes';
+    titleCell.colSpan = 2; 
+    titleCell.style.fontWeight = 'bold';
+    titleRow.appendChild(titleCell);
+    tableBody.appendChild(titleRow);
+
+    const labelRow = document.createElement('tr');
+    const A1CellLabel = document.createElement('td');
+    const BCellLabel = document.createElement('td');
+    A1CellLabel.textContent = 'A1 Cell'; 
+    BCellLabel.textContent = 'B Cell'; 
+    labelRow.appendChild(A1CellLabel);
+    labelRow.appendChild(BCellLabel);
+    tableBody.appendChild(labelRow);
+
+    const results = A1CBCRT15[currentBloodType];
+
+   const resultRow = document.createElement('tr');
+    for (let i = 0; i < results.length; i++) {
+        const valueCell = document.createElement('td');
+        valueCell.textContent = results[i];
+        resultRow.appendChild(valueCell);
+    }
+    tableBody.appendChild(resultRow);
+
+    table.appendChild(tableBody);
+    document.body.appendChild(table);
+}
+  
 
 document.getElementById("checkAnswerBtn").addEventListener("click", checkInterpretation);
 document.getElementById("firstResolutionStepBtn").addEventListener("click", checkFirstResolutionStep);
