@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Type Table</title>
+    <style>
+        body {
+            color: rgb(0, 0, 12);
+            font-family: 'Calibri';
+            font-size: 25px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #080808;
+            padding: 8px;
+            text-align: center;
+            font-size: 35px;
+        }
+
+        th {
+            background-color: #dd3636;
+            border: 1px solid #080808;
+            padding: 8px;
+            text-align: center;
+            color: white;
+            font-size: 30px;
+        }
+
+        td {
+            border: 1px solid #080808;
+            padding: 8px;
+            text-align: center;
+            font-size: 35px;
+        }
+
+        #interpretationInput, #firstResolutionStepInput {
+            margin-top: 10px;
+            padding: 5px;
+            font-size: 20px;
+        }
+
+        #feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            border: 1px solid #080808;
+            padding: 8px;
+            text-align: left;
+            font-size: 25px;
+            color: black;
+        }
+
+        #checkAnswerBtn, #firstResolutionStepBtn {
+            margin-top: 20px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 20px;
+        }
+
+        #firstResolutionStepInput, #interpretationInput {
+            background-color: rgb(235, 20, 56);
+            color: white;
+            border-radius: 10px;
+            font-size: 20px;
+        }
+
+        #discrepancyTypeInput {
+            background-color: #533d87;
+        }
+
+        #userFeedback {
+            font-family: 'Calibri';
+            margin-top: 20px;
+            font-size: 25px;
+            text-align: left;
+            color: black; 
+            font-weight: bold;
+        }
+      
+    #firstResolutionStepInstructions {
+    display: none; 
+}
+    </style>
+</head>
+<body>
+  
+<h1 style="text-align: center !important;">ABO Blood Type Discrepancy Activity</h1>
+
+<table id="bloodTypeTable">
+    <thead>
+        <tr>
+            <th>Anti-A</th>
+            <th>Anti-B</th>
+            <th>A1 Cells</th>
+            <th>B Cells</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr id="reactionRow">
+        </tr>
+    </tbody>
+</table>
+
+<div id="userFeedback">
+    <br id="persistentMessage">Feedback for the User:<br>
+    <p id="feedback"></p>
+</div>
+
+<label for="interpretationInput">Is the discrepancy present in the front type or the back type?</label>
+<select id="interpretationInput">
+    <option value="front type">Front type</option>
+    <option value="back type">Back type</option>
+</select>
+
+<button id="checkAnswerBtn">Check Answer</button>
+
+  <br>
+  <p id="firstResolutionStepInstructions">Based on the ABO results present, what would be the first method/test you would perform to try to resolve the discpreancy? Choose from the drop down menu below. Once you have selected what step you would like to perform next, click on the 'First Resolution Step' button to submit your response.</p>
+  
+<select id="firstResolutionStepInput">
+    <option value="Absorption/elutionstudies">Absorption/elution</option>
+    <option value="Checkhistory">Check history for group compatible transfusion or HPC transplantation</option>
+    <option value="Coldautoadsorption">Cold autoadsorption</option>
+    <option value="Discrepancyresolved">Discpreancy resolved. No additional testing is needed.</option>
+    <option value="Increaseserumcellratio">Increase plasma/serum to cell ratio</option>
+    <option value="Incubateroomtemp15-30mins">Incubate at RT for 15-30 mins</option>
+    <option value="Incubate4C15-30mins">Incubate at 4C for 15-30 mins</option>
+    <option value="Performantibodyscreenandautocontrol">Perform antibody screen with auto control</option>
+    <option value="Performantibodyid">Perform antibody identification via panel testing</option>
+    <option value="Prewarm">Prewarm Technique</option>    
+    <option value="Readmicroscopically">Read Microscopically</option>
+    <option value="RepeatreverseA2cells">Repeat reverse grouping with A2 cells</option>
+    <option value="Repeatreverseantigenneg">Repeat reverse grouping with antigen negative cells</option>
+    <option value="Salinereplacement">Saline Replacement</option>
+    <option value="Secretorstudies">Secretor studies</option>
+    <option value="Switchantisera">Switch to a different antisera</option>
+    <option value="Switchmonoclonal">Switch to monoclonal reagents</option>
+    <option value="Testauto">Test patient RBCs with own anti-B (i.e., test auto control)</option> 
+    <option value="Testbsaandlectins">Test BSA and lectins</option> 
+    <option value="Testdifferentclone">Test different source of anti-B or acidify original anti-B antisera</option> 
+    <option value="TestrbcswithA1lectin">Test RBCs with A1 lectin</option>
+    <option value="Treatrbcsenzymes">Treat RBCs with enzymes</option>
+    <option value="Washcellswithwarmsaline">Wash cells with warm saline and repeat testing</option>
+</select>
+<button id="firstResolutionStepBtn">First Resolution Step</button> 
+<p id="firstResolutionFeedback"></p>
+
+<script>
+const reagents = ['Anti-A', 'Anti-B', 'A1 Cells', 'B Cells'];
+let useFrontType;
+let currentBloodType;
+
+const frontTypedisc = {
+    'Afpaqb': ['4+', '1+', '0', '4+'],
+    'Afmf': ['4+mf', '0', '0', '4+'],
+    'AfpRx': ['4+', '1+', '0', '4+'],
+    'Bfmf': ['0', '4+mf', '4+', '0'],
+    'BfpRx': ['1+', '4+', '4+', '0'],
+    'Bfppoly': ['3+', '4+', '4+', '0'],
+    'Ofsa': ['2+', '2+', '4+', '4+'],
+    'Afnsub': ['0', '0', '0', '4+'],
+    'Bfnsub': ['0', '0', '4+', '0'],
+};
+
+const backTypedisc = {
+    'Abpallo': ['4+', '0', '2+', '4+'],
+    'Abpauto': ['4+', '0', '2+', '4+'],
+    'AbpA1': ['4+', '0', '2+', '4+'],
+    'AbpRx': ['4+', '0', '2+', '4+'],
+    'Bbpallo': ['0', '4+', '4+', '2+'],
+    'Bbpauto': ['0', '4+', '4+', '2+'],
+    'BbpRx': ['0', '4+', '4+', '2+'],
+    'ABbA1': ['4+', '4+', '2+', '0'],
+    'ABbpauto': ['4+', '4+', '2+', '2+'],
+    'ABbpRx': ['4+', '4+', '2+', '2+'],
+    'ABbpallo': ['4+', '4+', '2+', '2+'],
+    'Abn': ['4+', '0', '0', '0'],
+    'Bbn': ['0', '4+', '0', '0'],
+    'Obn': ['0', '0', 'w+', '0'],
+};
+
+function generateRandomReactions() {
+    const reactionsRow = document.getElementById("reactionRow");
+    reactionsRow.innerHTML = '';
+
+    useFrontType = Math.random() < 0.15;
+    currentBloodType = useFrontType
+        ? Object.keys(frontTypedisc)[Math.floor(Math.random() * Object.keys(frontTypedisc).length)]
+        : Object.keys(backTypedisc)[Math.floor(Math.random() * Object.keys(backTypedisc).length)];
+
+    const reactions = useFrontType ? frontTypedisc[currentBloodType] : backTypedisc[currentBloodType];
+
+    reactions.forEach((reaction) => {
+        const cell = document.createElement("td");
+        cell.textContent = reaction;
+        reactionsRow.appendChild(cell);
+    });
+
+    document.getElementById("feedback").textContent = '';
+}
+
+function checkInterpretation() {
+    const userInterpretation = document.getElementById("interpretationInput").value;
+    const correctAnswer = useFrontType ? "front type" : "back type";
+
+    if (userInterpretation === correctAnswer) {
+        document.getElementById("feedback").textContent = "Correct! The discrepancy present appears to be in the " + correctAnswer + ".";
+        document.getElementById("firstResolutionStepBtn").style.display = "inline-block";
+        document.getElementById("firstResolutionStepInstructions").style.display = "block"; 
+    } else {
+        document.getElementById("feedback").textContent = "Incorrect. Try again!";
+        document.getElementById("firstResolutionStepBtn").style.display = "none";
+        document.getElementById("firstResolutionStepInstructions").style.display = "none";
+    }
+}
+
+function checkFirstResolutionStep() {
+    const userResolutionStep = document.getElementById("firstResolutionStepInput").value;
+    let correctStep;
+
+    if (useFrontType) {
+        if (['Afpaqb', 'AfpRx', 'BfpRx', 'Bfppoly', 'Ofsa'].includes(currentBloodType)) {
+            correctStep = 'Washcellswithwarmsaline';
+        } else if (['Afmf', 'Bfmf'].includes(currentBloodType)) {
+            correctStep = 'Checkhistory';
+        } else if (['Afnsub', 'Bfnsub'].includes(currentBloodType)) {
+            correctStep = 'Incubateroomtemp15-30mins';
+        }
+    } else {
+        if (['Abpallo', 'Abpauto', 'AbpA1', 'AbpRx', 'Bbpallo', 'Bbpauto', 'BbpRx', 'ABbA1', 'ABbpauto', 'ABbpRx', 'ABbpallo'].includes(currentBloodType)) {
+            correctStep = 'Performantibodyscreenandautocontrol';
+        } else if (['Abn', 'Bbn', 'Obn'].includes(currentBloodType)) {
+            correctStep = 'Incubateroomtemp15-30mins';
+        }
+    }
+
+    if (userResolutionStep === correctStep) {
+        document.getElementById("feedback").textContent = "Correct! This is the appropriate first resolution step for this type of ABO discrepancy.";
+    } else {
+        document.getElementById("feedback").textContent = "Incorrect. This is not the first procedure/test performed or is not used to resolve this type of ABO discrepancy. Please choose a different option.";
+    }
+}
+
+document.getElementById("checkAnswerBtn").addEventListener("click", checkInterpretation);
+document.getElementById("firstResolutionStepBtn").addEventListener("click", checkFirstResolutionStep);
+
+generateRandomReactions();
+</script>
+
+</body>
+</html>
