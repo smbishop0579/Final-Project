@@ -38,7 +38,7 @@
             font-size: 35px;
         }
 
-        #interpretationInput, #firstResolutionStepInput {
+        #interpretationInput, #firstResolutionStepInput, {
             margin-top: 10px;
             padding: 5px;
             font-size: 20px;
@@ -54,7 +54,7 @@
             color: black;
         }
 
-        #checkAnswerBtn, #firstResolutionStepBtn {
+      #checkAnswerBtn, #firstResolutionStepBtn, #secondResolutionStepBtn {
             margin-top: 20px;
             padding: 10px;
             cursor: pointer;
@@ -97,7 +97,8 @@
     font-size: 25px;
     width: 15%;
 }
-
+       
+        }
       
     </style>
 </head>
@@ -140,7 +141,7 @@
     <option value="Absorption/elutionstudies">Absorption/elution</option>
     <option value="Checkhistory">Check history for group compatible transfusion or HPC transplantation</option>
     <option value="Coldautoadsorption">Cold autoadsorption</option>
-    <option value="Discrepancyresolved">Discpreancy resolved. No additional testing is needed.</option>
+    <option value="Discrepancyresolved">Discrepancy resolved. No additional testing is needed.</option>
     <option value="Increaseserumcellratio">Increase plasma/serum to cell ratio</option>
     <option value="Incubatefronttyperoomtemp15-30mins">Incubate front type at RT for 15-30 mins</option>
     <option value="Incubatefronttype4C15-30mins">Incubate front type at 4C for 15-30 mins</option>
@@ -164,11 +165,19 @@
     <option value="Washcellswithwarmsaline">Wash cells with warm saline and repeat testing</option>
 </select>
 <button id="firstResolutionStepBtn">Check First Resolution Step</button> 
+<button id="secondResolutionStepBtn" style="display: none;">Check Second Resolution Step</button>
 <p id="firstResolutionFeedback"></p>
+  
+<div id="tableContainer"></div>
   
 <p id="checkHistoryParagraph" style="display: none; font-weight: bold;"></p>
 
+<p id="secondResolutionStepInstructions" style="display: none; font-weight: bold;">Based on the result(s) of the first resolution step, what would be the second method/test you would perform or is no further testing needed? Choose your response from the drop-down menu. Once you have made your selection, click on the 'Check Second Resolution Step' button to submit your response.</p>
 
+
+
+<p id="secondResolutionFeedback"></p>
+  
 <script>
 const reagents = ['Anti-A', 'Anti-B', 'A1 Cells', 'B Cells'];
 let useFrontType;
@@ -303,9 +312,15 @@ if (useFrontType) {
            if (userResolutionStep === 'Incubatefronttyperoomtemp15-30mins') {
             displayRTincubfront(currentBloodType);
            }
+  document.getElementById("firstResolutionStepBtn").style.display = "none";
+  document.getElementById("secondResolutionStepBtn").style.display = "inline-block"; 
+   
+  document.getElementById("firstResolutionStepInstructions").style.display = "none";
+  document.getElementById("secondResolutionStepInstructions").style.display = "block";
    
     } else {
         document.getElementById("feedback").textContent = "Incorrect. This is not the first procedure/test performed or is not used to resolve this type of ABO discrepancy. Please choose a different option.";
+     
     }
 }
 
@@ -316,8 +331,7 @@ function displayCheckhx(currentBloodType) {
   
     document.getElementById("checkHistoryParagraph").style.display = "block";
 }
-
-
+  
 function displayRepeatfronttype(currentBloodType) {
     const  Repeatfronttype= {
         'AfpRx': ['4+', '0'],
