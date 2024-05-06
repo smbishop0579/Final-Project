@@ -141,6 +141,7 @@
     <option value="Absorption/elutionstudies">Absorption/elution</option>
     <option value="Checkhistory">Check history for group compatible transfusion or HPC transplantation</option>
     <option value="Coldautoadsorption">Cold autoadsorption</option>
+     <option value="Coldautoadsorptionorprewarm">Cold autoadsorption or prewarm technique</option>
     <option value="Discrepancyresolved">Discrepancy resolved. No additional testing is needed.</option>
     <option value="Increaseserumcellratio">Increase plasma/serum to cell ratio</option>
     <option value="Incubatefronttyperoomtemp15-30mins">Incubate front type at RT for 15-30 mins</option>
@@ -564,13 +565,8 @@ const userSecondResolutionStep = document.getElementById("resolutionStepInput").
             case 'Abpauto':
             case 'Bbpauto':
             case 'ABbpauto':
-                correctSecondStep = 'Coldautoadsorption';
+                correctSecondStep = 'Coldautoadsorptionorprewarm';
                 break;
-            case 'Abpauto':
-            case 'Bbpauto':
-            case 'ABbpauto':
-                correctSecondStep = 'Prewarm'
-                  break;
             case 'AbpA1':
             case 'ABbpA1':
                 correctSecondStep = 'TestrbcswithA1lectin';
