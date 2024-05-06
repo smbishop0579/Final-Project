@@ -62,7 +62,7 @@
             font-size: 20px;
         }
 
-        #firstResolutionStepInput, #interpretationInput {
+        #resolutionStepInput, #interpretationInput {
             background-color: #dd3636;
             color: white;
             border-radius: 10px;
@@ -137,7 +137,7 @@
   <br>
   <p id="firstResolutionStepInstructions"> Based on the ABO results present, what would be the first method/test you would perform to try to resolve the discpreancy? Choose from the drop down menu below. Once you have selected what step you would like to do next, click on the 'Check First Resolution Step' button to submit your response.</p>
   
-<select id="firstResolutionStepInput">
+<select id="resolutionStepInput">
     <option value="Absorption/elutionstudies">Absorption/elution</option>
     <option value="Checkhistory">Check history for group compatible transfusion or HPC transplantation</option>
     <option value="Coldautoadsorption">Cold autoadsorption</option>
@@ -166,6 +166,7 @@
 </select>
 <button id="firstResolutionStepBtn">Check First Resolution Step</button> 
 <button id="secondResolutionStepBtn" style="display: none;">Check Second Resolution Step</button>
+
 <p id="firstResolutionFeedback"></p>
   
 <div id="tableContainer"></div>
@@ -173,7 +174,6 @@
 <p id="checkHistoryParagraph" style="display: none; font-weight: bold;"></p>
 
 <p id="secondResolutionStepInstructions" style="display: none; font-weight: bold;">Based on the result(s) of the first resolution step, what would be the second method/test you would perform or is no further testing needed? Choose your response from the drop-down menu. Once you have made your selection, click on the 'Check Second Resolution Step' button to submit your response.</p>
-
 
 
 <p id="secondResolutionFeedback"></p>
@@ -248,7 +248,7 @@ function checkInterpretation() {
 }
 
 function checkFirstResolutionStep() {
-    const userResolutionStep = document.getElementById("firstResolutionStepInput").value;
+    const userResolutionStep = document.getElementById("resolutionStepInput").value;
     let correctStep;
 
 if (useFrontType) {
@@ -319,7 +319,7 @@ if (useFrontType) {
   document.getElementById("secondResolutionStepInstructions").style.display = "block";
    
     } else {
-        document.getElementById("feedback").textContent = "Incorrect. This is not the first procedure/test performed or is not used to resolve this type of ABO discrepancy. Please choose a different option.";
+        document.getElementById("feedback").textContent = "Incorrect. This is not the first procedure/test used to resolve this ABO discrepancy or it is not used to resolve this of ABO discrepancy. Please choose a different option.";
      
     }
 }
@@ -527,9 +527,78 @@ function displayRTincubation(currentBloodType) {
     document.body.appendChild(table);
 }
   
+function checkSecondResolutionStep() {
+     document.getElementById("firstResolutionFeedback").style.display = "none";
+  document.getElementById("secondResolutionFeedback").style.display = "block";
+  
+const userSecondResolutionStep = document.getElementById("resolutionStepInput").value;
+    let correctSecondStep;
 
+  if (useFrontType) {
+        switch (currentBloodType) {
+            case 'Afpaqb':
+                correctSecondStep = 'Testauto';
+                break;
+            case 'AfpRx':
+            case 'BfpRx': 
+            case 'Afmf':
+            case 'Bfmf':
+            case 'Ofsa':
+            case 'Afnsub':
+            case 'Bfnsub':
+                correctSecondStep = 'Discrepancyresolved';
+                break;
+            case 'Bfppoly':
+                correctSecondStep = 'Switchmonoclonal';
+                break;
+            default:
+                break;
+        }
+    } else {
+        switch (currentBloodType) {
+            case 'Abpallo':
+            case 'Bbpallo':
+            case 'ABbpallo':
+                correctSecondStep = 'Performantibodyid';
+                break;
+            case 'Abpauto':
+            case 'Bbpauto':
+            case 'ABbpauto':
+                correctSecondStep = 'Coldautoadsorption';
+                break;
+            case 'Abpauto':
+            case 'Bbpauto':
+            case 'ABbpauto':
+                correctSecondStep = 'Prewarm'
+                  break;
+            case 'AbpA1':
+            case 'ABbpA1':
+                correctSecondStep = 'TestrbcswithA1lectin';
+                break;
+            case 'AbpRx': 
+            case 'BbpRx': 
+            case 'ABbpRx':
+                correctSecondStep = 'Salinereplacement';
+                break;
+            case 'Abn':
+            case 'Bbn': 
+            case 'Obn':
+                correctSecondStep = 'Discrepancyresolved';
+                break;
+            default:
+        }
+    }
+    const feedbackElement = document.getElementById("feedback");
+    if (userSecondResolutionStep === correctSecondStep) {
+        feedbackElement.textContent = "Correct! This is the appropriate choice based on the feedback/testing from the first resolution step for this type of ABO discrepancy.";
+    } else {
+        feedbackElement.textContent = "Incorrect. Based on the feedback/testing from the first resolution step, this procedure/test is not used to resolve this type of ABO discrepancy or is not used at this time in the testing process. Please choose a different option.";
+    }
+}
+  
 document.getElementById("checkAnswerBtn").addEventListener("click", checkInterpretation);
 document.getElementById("firstResolutionStepBtn").addEventListener("click", checkFirstResolutionStep);
+document.getElementById("secondResolutionStepBtn").addEventListener("click", checkSecondResolutionStep);
 
 generateRandomReactions();
 </script>
