@@ -97,6 +97,19 @@
     font-size: 25px;
     width: 15%;
 }
+
+  #aboDropdown {
+    display: none;
+}
+      
+ .resolutionDropdown {
+    margin-top: 10px;
+    padding: 5px;
+    font-size: 20px;
+    background-color: #dd3636;
+    color: white;
+    border-radius: 10px;
+}
        
         }
       
@@ -121,6 +134,17 @@
     </tbody>
 </table>
 
+<div id="aboDropdown"style="display: none;"> 
+    <label for="aboSelect">Select ABO Group:</label>
+    <select id="aboSelect" class="resolutionDropdown">
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="O">O</option>
+        <option value="AB">AB</option>
+      <option value="NTD">No Type Deteremined</option>
+    </select>
+</div>
+  
 <div id="userFeedback">
     <br id="persistentMessage">Feedback for the User:<br>
     <p id="feedback"></p>
@@ -136,6 +160,9 @@
 
   <br>
   <p id="firstResolutionStepInstructions"> Based on the ABO results present, what would be the first method/test you would perform to try to resolve the discpreancy? Choose from the drop down menu below. Once you have selected what step you would like to do next, click on the 'Check First Resolution Step' button to submit your response.</p>
+  
+<p id="secondResolutionStepInstructions" style="display: none; font-weight: bold;">Based on the result(s) of the first resolution step, what would be the second method/test you would perform or is no further testing needed? Choose your response from the drop-down menu. Once you have made your selection, click on the 'Check Second Resolution Step' button to submit your response.</p>
+  
   
 <select id="resolutionStepInput">
     <option value="Absorption/elutionstudies">Absorption/elution</option>
@@ -161,7 +188,7 @@
     <option value="Testauto">Test patient RBCs with own anti-B (i.e., test auto control)</option> 
     <option value="Testbsaandlectins">Test BSA and lectins</option> 
     <option value="Testdifferentclone">Test different source of anti-B or acidify original anti-B antisera</option> 
-    <option value="TestrbcswithA1lectin">Test RBCs with A1 lectin</option>
+    <option value="TestrbcswithA1lectin">Test RBCs with anti-A1 lectin</option>
     <option value="Treatrbcsenzymes">Treat RBCs with enzymes</option>
     <option value="Washcellswithwarmsaline">Wash cells with warm saline and repeat testing</option>
 </select>
@@ -173,11 +200,11 @@
 <div id="tableContainer"></div>
   
 <p id="checkHistoryParagraph" style="display: none; font-weight: bold;"></p>
-
-<p id="secondResolutionStepInstructions" style="display: none; font-weight: bold;">Based on the result(s) of the first resolution step, what would be the second method/test you would perform or is no further testing needed? Choose your response from the drop-down menu. Once you have made your selection, click on the 'Check Second Resolution Step' button to submit your response.</p>
-
+ 
 
 <p id="secondResolutionFeedback"></p>
+
+<p id="chooseABOParagraph" style="display: none; font-weight: bold;"></p>
   
 <script>
 const reagents = ['Anti-A', 'Anti-B', 'A1 Cells', 'B Cells'];
@@ -217,7 +244,7 @@ function generateRandomReactions() {
     const reactionsRow = document.getElementById("reactionRow");
     reactionsRow.innerHTML = '';
 
-    useFrontType = Math.random() < 0.15;
+    useFrontType = Math.random() < 0.25;
     currentBloodType = useFrontType
         ? Object.keys(frontTypedisc)[Math.floor(Math.random() * Object.keys(frontTypedisc).length)]
         : Object.keys(backTypedisc)[Math.floor(Math.random() * Object.keys(backTypedisc).length)];
@@ -460,8 +487,8 @@ function displayAntibodyScreenResult(currentBloodType) {
     const labelRow = document.createElement('tr');
     const emptyLabelCell = document.createElement('td');
     const ISLabelCell = document.createElement('td');
-    emptyLabelCell.textContent = ''; // Empty cell for first column
-    ISLabelCell.textContent = 'IS'; // Cell for IS label
+    emptyLabelCell.textContent = ''; 
+    ISLabelCell.textContent = 'IS'; 
     labelRow.appendChild(emptyLabelCell);
     labelRow.appendChild(ISLabelCell);
     tableBody.appendChild(labelRow);
@@ -587,11 +614,214 @@ const userSecondResolutionStep = document.getElementById("resolutionStepInput").
     const feedbackElement = document.getElementById("feedback");
     if (userSecondResolutionStep === correctSecondStep) {
         feedbackElement.textContent = "Correct! This is the appropriate choice based on the feedback/testing from the first resolution step for this type of ABO discrepancy.";
+      
+        if (correctSecondStep === 'Testauto') {
+            displayTestAutoResults(currentBloodType);
+        } 
+        if (correctSecondStep === 'Discrepancyresolved') {
+            displaydetermineABO(currentBloodType);
+        } 
+        if (correctSecondStep === 'Switchmonoclonal') {
+            displayMonoclonal(currentBloodType);
+        } 
+       if (correctSecondStep === 'Performantibodyid') {
+            displayAbID(currentBloodType);
+        } 
+       if (correctSecondStep === 'Coldautoadsorptionorprewarm') {
+            displayAutoAds(currentBloodType);
+        } 
+       if (correctSecondStep === 'TestrbcswithA1lectin') {
+            displayA1lectin(currentBloodType);
+        } 
+       if (correctSecondStep === 'Salinereplacement') {
+            displaysalineRep(currentBloodType);
+        } 
     } else {
         feedbackElement.textContent = "Incorrect. Based on the feedback/testing from the first resolution step, this procedure/test is not used to resolve this type of ABO discrepancy or is not used at this time in the testing process. Please choose a different option.";
     }
 }
+ 
+function displayTestAutoResults(currentBloodType) {
+    const autoControl = {
+        'Afpaqb': ['0'],
+    }
+ const table = document.createElement('table');
+    table.id = 'separateTable'; 
+
+ const tableBody = document.createElement('tbody');
+
+    const labels = ['Auto Cells'];
+
+    const titleRow = document.createElement('tr');
+    const titleCell = document.createElement('td');
+    titleCell.textContent = 'Auto Control - patient not transfused within the last 3 months';
+    titleCell.colSpan = 1; 
+    titleCell.style.fontWeight = 'bold';
+    titleCell.style.backgroundColor = '#dd3636';
+    titleCell.style.color = 'white';
+    titleRow.appendChild(titleCell);
+    tableBody.appendChild(titleRow);
+
+    const labelRow = document.createElement('tr');
+    const emptyLabelCell = document.createElement('td');
+    const ISLabelCell = document.createElement('td');
+    ISLabelCell.textContent = 'IS'; 
+    labelRow.appendChild(ISLabelCell);
+    tableBody.appendChild(labelRow);
+
+    const results = autoControl[currentBloodType];
+
+   const resultRow = document.createElement('tr');
+    for (let i = 0; i < results.length; i++) {
+        const valueCell = document.createElement('td');
+        valueCell.textContent = results[i];
+        resultRow.appendChild(valueCell);
+    }
+    tableBody.appendChild(resultRow);
+
+    table.appendChild(tableBody);
+    document.body.appendChild(table);
+}     
+ 
+  function displaydetermineABO(currentBloodType) {
+    const chooseABOText = "Correct. The discpreancy is resolved or not additional testing can be performed to resolve the discrepancy. Please interpret the ABO based on all the information and testing provided.";
+    document.getElementById("feedback").textContent = chooseABOText;
+
+    document.getElementById("aboDropdown").style.display = "block";
+}
+ 
+function displayMonoclonal(currentBloodType) {
+    const mono = {
+      'Bfppoly': ['0', '4+'],
+    };
+
+ const table = document.createElement('table');
+    table.id = 'separateTable'; 
+
+    const tableBody = document.createElement('tbody');
+
+    const titleRow = document.createElement('tr');
+    const titleCell = document.createElement('td');
+    titleCell.textContent = 'Tested with Monoclonal Antisera';
+    titleCell.colSpan = 2; 
+    titleCell.style.fontWeight = 'bold';
+    titleCell.style.backgroundColor = '#dd3636'; 
+    titleCell.style.color = 'white';
+    titleRow.appendChild(titleCell);
+    tableBody.appendChild(titleRow);
+
+    const labelRow = document.createElement('tr');
+    const AntiALabel = document.createElement('td');
+    const AntiBLabel = document.createElement('td');
+    AntiALabel.textContent = 'Anti-A'; 
+    AntiBLabel.textContent = 'Anti-B'; 
+    labelRow.appendChild(AntiALabel);
+    labelRow.appendChild(AntiBLabel);
+    tableBody.appendChild(labelRow);
+
+    const results = mono[currentBloodType];
+
+   const resultRow = document.createElement('tr');
+    for (let i = 0; i < results.length; i++) {
+        const valueCell = document.createElement('td');
+        valueCell.textContent = results[i];
+        resultRow.appendChild(valueCell);
+    }
+    tableBody.appendChild(resultRow);
+
+    table.appendChild(tableBody);
+    document.body.appendChild(table);
+}
+
+function displayAutoAds(currentBloodType) {
+    const autoPre = {
+        'Abpauto': ['0', '4+'], 
+        'Bbpauto': ['4+', '0'], 
+        'ABpauto': ['0', '0']
+    };
+
+    const table = document.createElement('table');
+    table.id = 'separateTable'; 
+
+    const tableBody = document.createElement('tbody');
+
+    const titleRow = document.createElement('tr');
+    const titleCell = document.createElement('td');
+    titleCell.textContent = 'Autoadsorbed plasma (patient not transfused within last 3 months) or Prewarm Technique';
+    titleCell.colSpan = 2; 
+    titleCell.style.fontWeight = 'bold';
+    titleCell.style.backgroundColor = '#dd3636'; 
+    titleCell.style.color = 'white';
+    titleRow.appendChild(titleCell);
+    tableBody.appendChild(titleRow);
+
+    const labelRow = document.createElement('tr');
+    const A1CellLabel = document.createElement('td');
+    const BCellLabel = document.createElement('td');
+    A1CellLabel.textContent = 'A1 Cell'; 
+    BCellLabel.textContent = 'B Cell'; 
+    labelRow.appendChild(A1CellLabel);
+    labelRow.appendChild(BCellLabel);
+    tableBody.appendChild(labelRow);
+
+    const results = autoPre[currentBloodType];
+
+   const resultRow = document.createElement('tr');
+    for (let i = 0; i < results.length; i++) {
+        const valueCell = document.createElement('td');
+        valueCell.textContent = results[i];
+        resultRow.appendChild(valueCell);
+    }
+    tableBody.appendChild(resultRow);
+
+    table.appendChild(tableBody);
+    document.body.appendChild(table);
+}
   
+function displayA1lectin(currentBloodType) {
+    const A1 = {
+        'AbpA1': ['0'],
+        'ABbpA1': ['0'],
+    }
+ const table = document.createElement('table');
+    table.id = 'separateTable'; 
+
+ const tableBody = document.createElement('tbody');
+
+    const labels = ['anti-A1'];
+
+    const titleRow = document.createElement('tr');
+    const titleCell = document.createElement('td');
+    titleCell.textContent = 'RBCs tested with Anti-A1 lectin';
+    titleCell.colSpan = 1; 
+    titleCell.style.fontWeight = 'bold';
+    titleCell.style.backgroundColor = '#dd3636';
+    titleCell.style.color = 'white';
+    titleRow.appendChild(titleCell);
+    tableBody.appendChild(titleRow);
+
+    const labelRow = document.createElement('tr');
+    const emptyLabelCell = document.createElement('td');
+    const ISLabelCell = document.createElement('td');
+    ISLabelCell.textContent = 'IS'; 
+    labelRow.appendChild(ISLabelCell);
+    tableBody.appendChild(labelRow);
+
+    const results = A1[currentBloodType];
+
+   const resultRow = document.createElement('tr');
+    for (let i = 0; i < results.length; i++) {
+        const valueCell = document.createElement('td');
+        valueCell.textContent = results[i];
+        resultRow.appendChild(valueCell);
+    }
+    tableBody.appendChild(resultRow);
+
+    table.appendChild(tableBody);
+    document.body.appendChild(table);
+}     
+  
+      
 document.getElementById("checkAnswerBtn").addEventListener("click", checkInterpretation);
 document.getElementById("firstResolutionStepBtn").addEventListener("click", checkFirstResolutionStep);
 document.getElementById("secondResolutionStepBtn").addEventListener("click", checkSecondResolutionStep);
