@@ -69,7 +69,9 @@
             font-size: 20px;
         }
       
-
+      #AbIDParagraph {
+            display: none;
+        }
 
         #discrepancyTypeInput {
             background-color: #dd3636;
@@ -201,11 +203,14 @@
   
 <p id="checkHistoryParagraph" style="display: none; font-weight: bold;"></p>
  
-
 <p id="secondResolutionFeedback"></p>
 
 <p id="chooseABOParagraph" style="display: none; font-weight: bold;"></p>
   
+<p id="AbIDParagraph" style="display: none; font-weight: bold;"></p>
+  
+<img id="antibodyIdImage" src="https://sbishopmls.createunl.com/AntibodyPanel.jpeg"style="display: none;">
+
 <script>
 const reagents = ['Anti-A', 'Anti-B', 'A1 Cells', 'B Cells'];
 let useFrontType;
@@ -588,7 +593,7 @@ const userSecondResolutionStep = document.getElementById("resolutionStepInput").
             case 'Bbpallo':
             case 'ABbpallo':
                 correctSecondStep = 'Performantibodyid';
-                break;
+                break; 
             case 'Abpauto':
             case 'Bbpauto':
             case 'ABbpauto':
@@ -626,12 +631,13 @@ const userSecondResolutionStep = document.getElementById("resolutionStepInput").
         } 
        if (correctSecondStep === 'Performantibodyid') {
             displayAbID(currentBloodType);
-        } 
+       }
        if (correctSecondStep === 'Coldautoadsorptionorprewarm') {
             displayAutoAds(currentBloodType);
         } 
        if (correctSecondStep === 'TestrbcswithA1lectin') {
             displayA1lectin(currentBloodType);
+            
         } 
        if (correctSecondStep === 'Salinereplacement') {
             displaysalineRep(currentBloodType);
@@ -820,8 +826,16 @@ function displayA1lectin(currentBloodType) {
     table.appendChild(tableBody);
     document.body.appendChild(table);
 }     
+function displayAbID(currentBloodType) {
+  const AbIDText = "Antibody Panel at IS";  
+      document.getElementById("AbIDParagraph").textContent = AbIDText;
+      document.getElementById("AbIDParagraph").style.display = "block";
+     
+  var antibodyIdImage = document.getElementById("antibodyIdImage");
+     antibodyIdImage.style.display = "block";
+}
   
-      
+  
 document.getElementById("checkAnswerBtn").addEventListener("click", checkInterpretation);
 document.getElementById("firstResolutionStepBtn").addEventListener("click", checkFirstResolutionStep);
 document.getElementById("secondResolutionStepBtn").addEventListener("click", checkSecondResolutionStep);
